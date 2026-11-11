@@ -1,0 +1,14 @@
+function DAQstatesquare(st)
+%Initialize the Data Acquisition Toolbox
+s=daq('ni');
+%Add digital output lines
+ch1=addoutput(s,'Dev2','Port/Line3','Square');
+ch1.Frequency=100;
+ch.DutyCycle=0.5;
+if st==true
+outputData=false;
+write(s,OutputData);
+else
+outputData=true;
+write(s,outputData);
+end

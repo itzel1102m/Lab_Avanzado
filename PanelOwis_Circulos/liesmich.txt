@@ -1,0 +1,28 @@
+Inhalt des Ordners:
+
+- liesmich.txt Dieses Dokument
+- readme.txt englische Version dieser Datei
+- PS35TOOL_m.txt Skriptdatei fuer Demoanwendung (z.B. MatLab R2012a)
+- PS35.h Headerdatei zur PS35-DLL
+..\SDK\exe\x86\Release - Demoanwendung (32-Bit), 12 Batch-Dateien
+- PS35.dll PS35-Funktionsbibliothek (Version 2.0.1.2, 32-Bit)
+..\SDK\exe\x86\Release Unicode - Demoanwendung (32-Bit, Unicode), 12 Batch-Dateien
+- PS35u.dll PS35-Funktionsbibliothek (Version 2.0.1.2, 32-Bit, Unicode)
+..\SDK\exe\x64\Release - Demoanwendung (64-Bit), 12 Batch-Dateien
+- PS35.dll PS35-Funktionsbibliothek (Version 2.0.1.2, 64-Bit)
+..\SDK\exe\x64\Release Unicode - Demoanwendung (64-Bit, Unicode), 12 Batch-Dateien
+- PS35u.dll PS35-Funktionsbibliothek (Version 2.0.1.2, 64-Bit, Unicode)
+
+Um die Funktionen in Ihrer Anwendung zu benutzen, beachten Sie folgendes:
+1. Die Datei "ps35.h" in das Projekt einbinden (oder ins Ausgabeverzeichnis kopieren).
+2. Die Bibliothek "ps35.dll" oder "ps35u.dll" in das Projekt als Datei einbinden (oder ins Ausgabeverzeichnis kopieren).
+
+Um die Demoanwendung (32-Bit) nutzen zu können, sind die folgenden Dateien erforderlich:
+- Visual C++-Laufzeitdateien
+Diese Dateien können als erforderliche Komponenten während der Installation auf einem Computer ausgefuehrt werden, auf dem Visual C++ 2010 Express Edition (oder hoeher) nicht installiert ist.
+vcredist_x86.exe - Redistributionspaket fuer Visual C++ (32-Bit) 
+
+Um die Demoanwendung (64-Bit) nutzen zu können, sind die folgenden Dateien erforderlich:
+- Visual C++-Laufzeitdateien
+Diese Dateien können als erforderliche Komponenten während der Installation auf einem Computer ausgefuehrt werden, auf dem Visual C++ 2010 Express Edition (oder hoeher) nicht installiert ist.
+vcredist_x64.exe - Redistributionspaket fuer Visual C++ (64-Bit) 

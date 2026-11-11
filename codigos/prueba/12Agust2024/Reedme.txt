@@ -1,0 +1,76 @@
+Instrucciones de instalación
+
+El sistema de Matlab a utilizar debe contener los siguientes PlugIns que se descargan en Add-On Manager
+
+	****Matlab Support For MinGW-w64 C/C++ Compiler
+	****Matlab Support Package for Arduino Hardware
+	****Ni DAQ Toolbox
+	****Using Counter of NI DAQ card to generate a pulse train
+	****Data Acquisition Toolbox
+
+Los motores Owis controlados por Matlab son manejados por los siguientes programas que deben encontrarse en
+en el mismo directorio o carpeta
+
+	****PanelOwis.fig (genera el panel de interacción en Matlab)
+	****PanelOwis.m   (contiene la lógica de programación del panel de interacción)
+	****ps35New.m     (función que contiene la secuencia básica de movimiento)
+	****ps35tool.m	  (es una función de respuesta a un solo movimiento)
+	****ps35toolX.m	  (es una función de respuesta a un solo movimiento en X)
+	****ps35toolY.m	  (es una función de respuesta a un solo movimiento en Y)
+	****generalMov.m  (programación para conectar máximos y mínimos de la figura realizar los 				   movimientos)
+	****VertexDetection.m (analiza la figura para detectar los vertices principales de oblación)
+	****repRate.m     (realiza una secuencia de ablación en puntos
+	****DAQstate.m    (función que permite la comunicación con la tarjeta de adquisición de datos)
+	****ps35.h	  (archivo en lenguaje C que contiene todas las librerías del sistema Owis)
+	****ps35.dll	  (archivo de ejecución que en ocasiones es invocado por ps35.h)
+	****pgonCorners.m (subfunción ocupada por VertexDetection para detectar esquinas en una imagen 				   binaria de un polígono convexo con un número conocido de vértices.)
+
+*******************************************************************************************
+*******************************************************************************************
+********************************Panel Owis en Matlab***************************************
+*******************************************************************************************
+*******************************************************************************************
+
+Inicie el programa PanelOwis.m de forma normal en Matlab
+
+*Al desplegarse la figura contara cada uno de los recuadros que reciben el texto y botones.
+
+*Cada recuadro que reciba texto deben ser finalizado con el botón ENTER para asegurar el valor de la variable.
+
+******************** Reglas de operación del sistema de Ablación***************************
+
+1.- Ingrese el número de Puerto COM de conexión Owis con su computadora.
+
+2.- Ingrese los valores de los ejes. Notara que contienen un valor, solo coloque enter. Puede cambiar los valores de los ejes en caso de tener un movimiento extraño al esperado. Sin embargo, es recomendable no mover dicho valores si no es necesario.
+
+3.- Rellene el cuadro de texto de Case n para el caso deseado. Una ves seleccionado presione ENTER para 	guardar sus cambios.
+	3.1 El caso n=1 ablasionará haciendo movimiento horizontales largos sobre el eje X y movimientos 	cortos en el eje Y.
+	3.2 El caso n=2 ablasionará haciendo movimientos verticales largos sobre el eje Y y movimientos 	cortos en el eje X.
+4.- Charge Image. Este botón solo es de visualización de la imagen.
+5.- Vertex Detection. Este botón desplegara una ventana para seleccionar la imagen. Una vez seleccionada
+		      determinará los vertices de las figuras.
+6.- Step-size. Ingrese el valor de traslape de ablación y presione "ENTER".
+7.- Change Vel. Determinara la velocidad de ablación de cada eje X & Y respectivamente. Cargue el valor 		deseado y presione "ENTER".
+8.- Guardados todos los valores presione "Go Ablation"
+
+9.- Pause Ablation. Detendrá la ablación ejecutando la ultima orden enviada al sistema Owis. Posteriormente 		     se pausara el proceso si presiona nuevamente el sistema continuará.
+
+10.- Stop Ablation. El presionar el botón detendrá la ablación. Los motores continuaran hasta completar la 		   última orden. Si requiere finalizar abruptamente apague directamente los motores y coloque
+		   ctrl c en la ventana de comandos de Matlab.
+
+11.- Move. Moverá lo motores de los valores indicados el recuadro. La barra de movimiento fino mueve de pequeños valores de los motores
+
+11.- Set Home. Toma la última posición de los motores y arranca los motores a dicha posición.
+
+12.- Go Home. acciona los moteras a las posiciones iniciales de movimiento inicial.
+
+13. Disconnect. Desconecta los motores Owis del control remoto con Matlab
+
+****** Pulse repetition *****
+
+A cada valor introducido pulsar "ENTER" para guardar el valor.
+
+14.- Dots. El botón acciona la repetición de el laser a la frecuencia determinada.
+
+
+

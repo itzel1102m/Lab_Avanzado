@@ -1,0 +1,202 @@
+function ps35tool_Antonio( in1_ComPort, in_MoveBool, in_M1_disp, in_M2_disp, in5_nExport )
+%ps35tool This is a demo application for the PS 35 controller.
+%   retval = ps35tool( COM_port, axis_no, velocity, distance ) moves the attached axis...
+%   function parameters 
+%   parameter 1 - COM port
+%   parameter 2 - Boolean to determine whether MultiGoTarget is activated
+%   parameter 3 - M1 Displacement in mm (Relative Distance)
+%   parameter 4 - M2 Displacement in mm (Relative Distance)
+%   parameter 5 - LEGACY - mode for data export: 0 - nothing to do, 1 - save, 2 - load
+
+% nComPort=int32(6); 
+% nAxis=int32(1);
+% dPosF=30000.0;
+% dDistance=10.0; 
+% nExport=int32(0);
+
+% 
+% nargin Safe-fail 
+% 
+% set parameters
+if nargin ~= 5  
+	fprintf(2, 'ps35tool(COM_port, axis_no, velocity, distance, params_export)\n');
+	fprintf(2, 'e.g. ps35tool(7,1,30000,10,0)\n');
+    return;
+end
+% ****************************
+% set parameters *************
+% ****************************
+% 
+% Int 1 - COM PORT - Conection to OWIS
+%
+if ischar(in1_ComPort) == 0
+	nComPort=int32(in1_ComPort);
+else
+    nComPort=int32(str2double(in1_ComPort));
+end
+
+% % 
+% % Int 5 - Mode of Export - AA 0 - LEGACY
+% %
+% if ischar(in5_nExport) == 0
+% 	nExport=int32(in5_nExport);
+% else
+%     nExport=int32(str2double(in5_nExport));
+% end
+% ****************************
+% ****************************
+% ****************************
+
+loadlibrary('ps35','ps35.h')
+
+%
+% Conection to OWIS- int1
+%
+% open virtual serial interface (or serial interface via tcp/ip socket)
+if(nComPort==0)  % find first connected control unit
+	calllib('ps35','PS35_SimpleConnect', 1, '');
+else if(nComPort==-1) % find the first connected control unit via tcp/ip socket (localhost, port=1200)
+	calllib('ps35','PS35_SimpleConnect', 1, 'net');
+else % connect control unit with defined COM port
+	calllib('ps35','PS35_Connect', 1, 0, nComPort, 9600, 0, 0, 0, 0);
+end
+
+% define constants for calculation Inc -> mm
+% calllib('ps35','PS35_SetStageAttributes', 1, nAxis, 1.0, 200, 1.0);
+
+%
+% Export Params - int 5
+%
+% % load param file in2_nAxis - LEGACY
+% if(nExport==2)
+% 	calllib('ps35','PS35_LoadTextFile', 1, nAxis, 'ps35_params_export.txt');
+% end
+
+%
+% Initialize axis
+%
+calllib('ps35','PS35_MotorInit', 1, 1); % Initialize M1
+calllib('ps35','PS35_MotorInit', 1, 2); % Initialize M2
+
+% % save param file in2_nAxis - LEGACY
+% if(nExport==1)
+% 	calllib('ps35','PS35_LoadTextFile', 1, nAxis, 'ps35_params_export.txt');
+% end
+
+%
+% Prepare M1 and M2
+%
+% set target mode (0 - Set to relative positioning)
+calllib('ps35','PS35_SetTargetMode', 1, 1, 0);
+calllib('ps35','PS35_SetTargetMode', 1, 2, 0);
+
+%
+% Interface message
+% 
+% check position
+M1_Position = calllib('ps35','PS35_GetPositionEx', 1, 1);
+fprintf(1, 'Position i: M1=%.3f\n', M1_Position);
+M2_Position = calllib('ps35','PS35_GetPositionEx', 1, 2);
+fprintf(1, 'Position i: M2=%.3f\n', M2_Position);
+
+% Check motor parameters
+cell_ps35_Function_Name = { 
+    "PS35_GetTarget";
+    "PS35_GetTargetEx";
+    % "PS35_GetActVel";
+    % "PS35_GetDispMode";
+    %"PS35_GetAccel";
+    %"PS35_GetDecel";
+    %"PS35_GetAccelEx";
+    %"PS35_GetDecelEx";
+    "PS35_GetPosVel";
+    "PS35_GetPosF";
+    "PS35_GetPosFEx";
+    "PS35_GetVel";
+    };
+disp("- - - - - - - - - - - - - -")
+disp("Before")
+disp("Parameter Check")
+for i = 1:length(cell_ps35_Function_Name)
+    ps35_Function_Name = cell_ps35_Function_Name{i};
+    tmpVar = calllib('ps35', ps35_Function_Name, 1, 1);
+    disp( ps35_Function_Name + ": " + num2str(tmpVar) );
+end
+disp("- - - - - - - - - - - - - -")
+
+% 
+% Sandbox
+%
+% % Playiung with the acceleration
+% calllib('ps35','PS35_GetAccelEx', 1, 1, in_M1_disp);
+
+%
+% MultiGoTarget
+% 
+% Stay within boundaries (10.0 mm)
+if abs(M1_Position + in_M1_disp) > 10.0 
+    in_M1_disp = - sign(M1_Position + in_M1_disp)* in_M1_disp;
+end
+if abs(M2_Position + in_M2_disp) > 10.0  
+    in_M2_disp = - sign(M2_Position + in_M2_disp)*in_M2_disp;
+end
+% Set (relative displacements)
+calllib('ps35','PS35_SetTargetEx', 1, 1, in_M1_disp);
+calllib('ps35','PS35_SetTargetEx', 1, 2, in_M2_disp);
+
+% calllib('ps35','PS35_SetFreeFEx', 1, 1, 0.05);
+% calllib('ps35','PS35_SetFreeFEx', 1, 2, 0.05);
+
+calllib('ps35','PS35_SetVel', 1, 1, 50);
+calllib('ps35','PS35_SetVel', 1, 2, 50);
+% 
+% calllib('ps35','PS35_SetPosFEx', 1, 1, 0.5);
+% calllib('ps35','PS35_SetPosFEx', 1, 2, 0.5);
+% 
+calllib('ps35','PS35_SetPosFEx', 1, 1, 0.1);
+calllib('ps35','PS35_SetPosFEx', 1, 2, 0.1);
+
+% calllib('ps35','PS35_MoveEx', 1, 1, 1.0, 1);
+% calllib('ps35','PS35_MoveEx', 1, 2, 1.0, 1);
+
+% Apply MultiGoTarget
+if in_MoveBool == 1 
+    % 3 = 11_[base 2]
+    % calllib('ps35','PS35_MultiGoTarget',1,3,1)
+    % calllib('ps35','PS35_SetTargetMode', 1, 1, 0);
+    % calllib('ps35','PS35_SetTargetMode', 1, 2, 0);
+    % calllib('ps35','PS35_SetPosVel', 1, 1, 5);
+    % calllib('ps35','PS35_SetPosVel', 1, 2, 5);
+    % calllib('ps35','PS35_SetTargetEx', 1, 1, in_M1_disp);
+    % calllib('ps35','PS35_SetTargetEx', 1, 2, in_M2_disp);
+    % calllib('ps35','PS35_MultiGoTarget',1,3,1)
+    lineIndx = 10;
+    % strVar = '1,2,1000,0,12,50000,0,360,1,1';
+    % myTable = calllib('ps35','PS35_CircleToVectorTab',1,lineIndx,strVar)
+    calllib('ps35','PS35_MultiGoTarget',1,3,1)
+     
+end
+
+disp("- - - - - - - - - - - - - -")
+disp("After")
+disp("Parameter Check")
+for i = 1:length(cell_ps35_Function_Name)
+    ps35_Function_Name = cell_ps35_Function_Name{i};
+    tmpVar = calllib('ps35', ps35_Function_Name, 1, 1);
+    disp( ps35_Function_Name + ": " + num2str(tmpVar) );
+end
+disp("- - - - - - - - - - - - - -")
+
+% check position
+PositionB = calllib('ps35','PS35_GetPositionEx', 1, 1);
+fprintf(1, 'Position f: M1=%.3f\n', PositionB);
+PositionB = calllib('ps35','PS35_GetPositionEx', 1, 2);
+fprintf(1, 'Position f: M2=%.3f\n', PositionB);
+
+
+% close interface
+calllib('ps35','PS35_Disconnect',1);
+
+unloadlibrary ps35
+
+end
